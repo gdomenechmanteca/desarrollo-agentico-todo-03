@@ -31,5 +31,19 @@ document.addEventListener("submit", function (event) {
     status.remove();
   }
 
-  fetch(form.action);
+  // Envía el formulario tal cual (POST con _method=PUT y authenticity_token);
+  // si falla, recarga para mostrar el estado real.
+  fetch(form.action, {
+    method: form.method.toUpperCase(),
+    body: new URLSearchParams(new FormData(form)),
+    credentials: "same-origin",
+  })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("toggle failed: " + response.status);
+      }
+    })
+    .catch(function () {
+      window.location.reload();
+    });
 });
