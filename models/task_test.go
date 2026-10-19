@@ -1,6 +1,11 @@
 package models
 
-import "strings"
+import (
+	"errors"
+	"strings"
+
+	"github.com/gofrs/uuid"
+)
 
 func (ms *ModelSuite) Test_Task_Create_Valid() {
 	task := &Task{Title: "Comprar café"}
@@ -68,4 +73,76 @@ func (ms *ModelSuite) Test_Task_Toggle_Persists() {
 	reloaded := &Task{}
 	ms.NoError(ms.DB.Find(reloaded, task.ID))
 	ms.True(reloaded.Completed)
+}
+
+func (ms *ModelSuite) createTaskAt(title string, position int) *Task {
+	task := &Task{Title: title, Position: position}
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+	return task
+}
+
+func (ms *ModelSuite) positionOf(task *Task) int {
+	reloaded := &Task{}
+	ms.NoError(ms.DB.Find(reloaded, task.ID))
+	return reloaded.Position
+}
+
+func (ms *ModelSuite) Test_NextTaskPosition_EmptyTable() {
+	next, err := NextTaskPosition(ms.DB)
+	ms.NoError(err)
+	ms.Equal(1, next)
+}
+
+func (ms *ModelSuite) Test_NextTaskPosition_AfterMax() {
+	ms.createTaskAt("Primera", 1)
+	ms.createTaskAt("Quinta", 5)
+
+	next, err := NextTaskPosition(ms.DB)
+	ms.NoError(err)
+	ms.Equal(6, next)
+}
+
+func (ms *ModelSuite) Test_ReorderTasks_PersistsPositions() {
+	a := ms.createTaskAt("A", 1)
+	b := ms.createTaskAt("B", 2)
+	c := ms.createTaskAt("C", 3)
+
+	ms.NoError(ReorderTasks(ms.DB, []uuid.UUID{c.ID, a.ID, b.ID}))
+
+	ms.Equal(1, ms.positionOf(c))
+	ms.Equal(2, ms.positionOf(a))
+	ms.Equal(3, ms.positionOf(b))
+}
+
+func (ms *ModelSuite) assertInvalidOrderKeepsPositions(ids func(a, b, c *Task) []uuid.UUID) {
+	a := ms.createTaskAt("A", 1)
+	b := ms.createTaskAt("B", 2)
+	c := ms.createTaskAt("C", 3)
+
+	err := ReorderTasks(ms.DB, ids(a, b, c))
+	ms.True(errors.Is(err, ErrInvalidTaskOrder))
+
+	ms.Equal(1, ms.positionOf(a))
+	ms.Equal(2, ms.positionOf(b))
+	ms.Equal(3, ms.positionOf(c))
+}
+
+func (ms *ModelSuite) Test_ReorderTasks_MissingID_Invalid() {
+	ms.assertInvalidOrderKeepsPositions(func(a, b, c *Task) []uuid.UUID {
+		return []uuid.UUID{c.ID, a.ID}
+	})
+}
+
+func (ms *ModelSuite) Test_ReorderTasks_UnknownID_Invalid() {
+	ms.assertInvalidOrderKeepsPositions(func(a, b, c *Task) []uuid.UUID {
+		return []uuid.UUID{c.ID, a.ID, uuid.Must(uuid.NewV4())}
+	})
+}
+
+func (ms *ModelSuite) Test_ReorderTasks_DuplicateID_Invalid() {
+	ms.assertInvalidOrderKeepsPositions(func(a, b, c *Task) []uuid.UUID {
+		return []uuid.UUID{c.ID, a.ID, a.ID}
+	})
 }
