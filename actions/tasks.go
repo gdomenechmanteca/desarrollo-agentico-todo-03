@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/validate/v3"
+	"github.com/gofrs/uuid"
 )
 
 // TasksIndex muestra la lista de tareas y el formulario de creación.
@@ -16,7 +18,7 @@ func TasksIndex(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 
 	tasks := models.Tasks{}
-	if err := tx.Order("created_at asc, id asc").All(&tasks); err != nil {
+	if err := tx.Order(models.TaskOrder).All(&tasks); err != nil {
 		return err
 	}
 
@@ -36,6 +38,12 @@ func TasksCreate(c buffalo.Context) error {
 	}
 	task.Title = strings.TrimSpace(task.Title)
 
+	position, err := models.NextTaskPosition(tx)
+	if err != nil {
+		return err
+	}
+	task.Position = position
+
 	verrs, err := tx.ValidateAndCreate(task)
 	if err != nil {
 		return err
@@ -43,7 +51,7 @@ func TasksCreate(c buffalo.Context) error {
 
 	if verrs.HasAny() {
 		tasks := models.Tasks{}
-		if err := tx.Order("created_at asc, id asc").All(&tasks); err != nil {
+		if err := tx.Order(models.TaskOrder).All(&tasks); err != nil {
 			return err
 		}
 
@@ -134,4 +142,25 @@ func TasksDestroy(c buffalo.Context) error {
 
 	c.Flash().Add("success", "Tarea eliminada.")
 	return c.Redirect(http.StatusSeeOther, "/")
+}
+
+// TasksReorder guarda el orden de la lista recibido como lista completa de ids.
+func TasksReorder(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+
+	input := struct {
+		IDs []uuid.UUID `json:"ids"`
+	}{}
+	if err := c.Bind(&input); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	if err := models.ReorderTasks(tx, input.IDs); err != nil {
+		if errors.Is(err, models.ErrInvalidTaskOrder) {
+			return c.Error(http.StatusUnprocessableEntity, err)
+		}
+		return err
+	}
+
+	return c.Render(http.StatusNoContent, nil)
 }

@@ -121,7 +121,7 @@ h1 {
 
 .task {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-columns: 28px 44px minmax(0, 1fr) auto;
   align-items: start;
   column-gap: 0.3rem;
   min-height: 61px;
@@ -137,6 +137,7 @@ h1 {
   line-height: 1.55;
 }
 
+.drag-handle,
 .task-toggle-button,
 .icon-action {
   position: relative;
@@ -221,6 +222,37 @@ h1 {
 .icon-danger:hover {
   color: var(--color-danger);
   background: #fcf0ec;
+}
+
+.drag-handle {
+  width: 28px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.drag-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.drag-handle:hover {
+  color: var(--color-text);
+}
+
+.task-dragging {
+  position: relative;
+  z-index: 1;
+  background: #fafaf8;
+  box-shadow: 0 4px 14px rgba(40, 40, 38, 0.12);
+}
+
+.task-dragging .drag-handle,
+.is-reordering {
+  cursor: grabbing;
+}
+
+.is-reordering {
+  user-select: none;
 }
 
 .new-task {
@@ -393,11 +425,15 @@ input:focus-visible {
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .drag-handle,
   .task-actions {
     opacity: 0;
     transition: opacity 120ms ease;
   }
 
+  .task:hover .drag-handle,
+  .task:focus-within .drag-handle,
+  .task-dragging .drag-handle,
   .task:hover .task-actions,
   .task:focus-within .task-actions {
     opacity: 1;
@@ -434,7 +470,11 @@ input:focus-visible {
   }
 
   .task {
-    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-columns: 24px 36px minmax(0, 1fr) auto;
+  }
+
+  .drag-handle {
+    width: 24px;
   }
 
   .task-toggle-button,

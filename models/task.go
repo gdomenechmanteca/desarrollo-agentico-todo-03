@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,11 +14,18 @@ import (
 // TitleMaxLength es el número máximo de caracteres permitido en el título.
 const TitleMaxLength = 200
 
+// TaskOrder es el orden en que se muestra la lista de tareas.
+const TaskOrder = "position asc, created_at asc, id asc"
+
+// ErrInvalidTaskOrder indica que un orden no incluye cada tarea exactamente una vez.
+var ErrInvalidTaskOrder = errors.New("el orden debe incluir cada tarea exactamente una vez")
+
 // Task representa una tarea de la lista.
 type Task struct {
 	ID        uuid.UUID `json:"id" db:"id" form:"-"`
 	Title     string    `json:"title" db:"title" form:"title"`
 	Completed bool      `json:"completed" db:"completed" form:"-"`
+	Position  int       `json:"position" db:"position" form:"-"`
 	CreatedAt time.Time `json:"created_at" db:"created_at" form:"-"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at" form:"-"`
 }
@@ -37,4 +45,44 @@ func (t *Task) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	}
 
 	return verrs, nil
+}
+
+// NextTaskPosition devuelve la posición que ocupa una tarea añadida al final.
+func NextTaskPosition(tx *pop.Connection) (int, error) {
+	next := struct {
+		Position int `db:"position"`
+	}{}
+	if err := tx.RawQuery("SELECT COALESCE(MAX(position), 0) + 1 AS position FROM tasks").First(&next); err != nil {
+		return 0, err
+	}
+	return next.Position, nil
+}
+
+// ReorderTasks asigna a las tareas el orden de ids, que debe incluirlas todas exactamente una vez.
+func ReorderTasks(tx *pop.Connection, ids []uuid.UUID) error {
+	tasks := Tasks{}
+	if err := tx.Select("id").All(&tasks); err != nil {
+		return err
+	}
+	if len(ids) != len(tasks) {
+		return ErrInvalidTaskOrder
+	}
+
+	pending := make(map[uuid.UUID]bool, len(tasks))
+	for _, t := range tasks {
+		pending[t.ID] = true
+	}
+	for _, id := range ids {
+		if !pending[id] {
+			return ErrInvalidTaskOrder
+		}
+		delete(pending, id)
+	}
+
+	for i, id := range ids {
+		if err := tx.RawQuery("UPDATE tasks SET position = ? WHERE id = ?", i+1, id).Exec(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

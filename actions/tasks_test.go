@@ -237,3 +237,106 @@ func (as *ActionSuite) Test_TasksUpdate_InvalidID() {
 	res := as.HTML("/tasks/no-es-un-uuid").Put(url.Values{"title": {"Título nuevo"}})
 	as.Equal(404, res.Code)
 }
+
+func (as *ActionSuite) createTaskAt(title string, position int) *models.Task {
+	task := &models.Task{Title: title, Position: position}
+	verrs, err := as.DB.ValidateAndCreate(task)
+	as.NoError(err)
+	as.False(verrs.HasAny())
+	return task
+}
+
+func (as *ActionSuite) positionOf(task *models.Task) int {
+	reloaded := &models.Task{}
+	as.NoError(as.DB.Find(reloaded, task.ID))
+	return reloaded.Position
+}
+
+func (as *ActionSuite) Test_TasksIndex_OrdersByPosition() {
+	as.createTaskAt("Creada primero", 3)
+	as.createTaskAt("Creada segundo", 2)
+	as.createTaskAt("Creada tercero", 1)
+
+	res := as.HTML("/").Get()
+	as.Equal(200, res.Code)
+
+	body := res.Body.String()
+	first := strings.Index(body, "Creada tercero")
+	second := strings.Index(body, "Creada segundo")
+	third := strings.Index(body, "Creada primero")
+	as.True(first >= 0 && first < second && second < third)
+}
+
+func (as *ActionSuite) Test_TasksIndex_RendersDragHandle() {
+	task := as.createTaskAt("Tarea movible", 1)
+
+	res := as.HTML("/").Get()
+	as.Equal(200, res.Code)
+
+	body := res.Body.String()
+	as.Contains(body, `data-reorder-url="/tasks/reorder"`)
+	as.Contains(body, `data-task-id="`+task.ID.String()+`"`)
+	as.Contains(body, "Mover tarea: Tarea movible")
+}
+
+func (as *ActionSuite) Test_TasksCreate_AppendsAtEnd() {
+	as.createTaskAt("Existente", 7)
+
+	res := as.HTML("/tasks").Post(&models.Task{Title: "Nueva al final"})
+	as.Equal(303, res.Code)
+
+	task := &models.Task{}
+	as.NoError(as.DB.Where("title = ?", "Nueva al final").First(task))
+	as.Equal(8, task.Position)
+}
+
+func (as *ActionSuite) Test_TasksReorder_Persists() {
+	a := as.createTaskAt("Tarea A", 1)
+	b := as.createTaskAt("Tarea B", 2)
+	c := as.createTaskAt("Tarea C", 3)
+
+	res := as.JSON("/tasks/reorder").Post(map[string]interface{}{
+		"ids": []string{c.ID.String(), a.ID.String(), b.ID.String()},
+	})
+	as.Equal(204, res.Code)
+
+	as.Equal(1, as.positionOf(c))
+	as.Equal(2, as.positionOf(a))
+	as.Equal(3, as.positionOf(b))
+
+	body := as.HTML("/").Get().Body.String()
+	as.True(strings.Index(body, "Tarea C") < strings.Index(body, "Tarea A"))
+	as.True(strings.Index(body, "Tarea A") < strings.Index(body, "Tarea B"))
+}
+
+func (as *ActionSuite) Test_TasksReorder_IncompleteList() {
+	a := as.createTaskAt("Tarea A", 1)
+	b := as.createTaskAt("Tarea B", 2)
+
+	res := as.JSON("/tasks/reorder").Post(map[string]interface{}{
+		"ids": []string{b.ID.String()},
+	})
+	as.Equal(422, res.Code)
+
+	as.Equal(1, as.positionOf(a))
+	as.Equal(2, as.positionOf(b))
+}
+
+func (as *ActionSuite) Test_TasksReorder_UnknownID() {
+	a := as.createTaskAt("Tarea A", 1)
+
+	res := as.JSON("/tasks/reorder").Post(map[string]interface{}{
+		"ids": []string{uuid.Must(uuid.NewV4()).String()},
+	})
+	as.Equal(422, res.Code)
+	as.Equal(1, as.positionOf(a))
+}
+
+func (as *ActionSuite) Test_TasksReorder_InvalidUUID() {
+	as.createTaskAt("Tarea A", 1)
+
+	res := as.JSON("/tasks/reorder").Post(map[string]interface{}{
+		"ids": []string{"no-es-un-uuid"},
+	})
+	as.Equal(400, res.Code)
+}
