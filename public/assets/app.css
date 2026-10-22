@@ -21,6 +21,8 @@ form {
   --color-sidebar: #f7f7f5;
   --color-primary: #b73526;
   --color-primary-hover: #992b1e;
+  --color-button-primary: #1f5fbf;
+  --color-button-primary-hover: #184c99;
   --color-focus: #245ab4;
   --color-danger: #a52b25;
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -327,14 +329,14 @@ input[aria-invalid="true"] {
 }
 
 .button-primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--color-button-primary);
+  border-color: var(--color-button-primary);
   color: #ffffff;
 }
 
 .button-primary:hover {
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background: var(--color-button-primary-hover);
+  border-color: var(--color-button-primary-hover);
 }
 
 a:focus-visible,
