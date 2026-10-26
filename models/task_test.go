@@ -146,3 +146,45 @@ func (ms *ModelSuite) Test_ReorderTasks_DuplicateID_Invalid() {
 		return []uuid.UUID{c.ID, a.ID, a.ID}
 	})
 }
+
+func (ms *ModelSuite) Test_Task_DueDate_Persists() {
+	dueDate, err := ParseDueDate("2026-11-03")
+	ms.NoError(err)
+
+	task := &Task{Title: "Entregar el informe", DueDate: dueDate}
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+
+	reloaded := &Task{}
+	ms.NoError(ms.DB.Find(reloaded, task.ID))
+	ms.Equal("2026-11-03", reloaded.DueDateValue())
+	ms.Equal("03/11/2026", reloaded.DueDateLabel())
+}
+
+func (ms *ModelSuite) Test_Task_DueDate_Optional() {
+	task := &Task{Title: "Sin fecha límite"}
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+
+	reloaded := &Task{}
+	ms.NoError(ms.DB.Find(reloaded, task.ID))
+	ms.Nil(reloaded.DueDate)
+	ms.Equal("", reloaded.DueDateValue())
+	ms.Equal("", reloaded.DueDateLabel())
+}
+
+func (ms *ModelSuite) Test_ParseDueDate() {
+	for _, s := range []string{"", "  "} {
+		d, err := ParseDueDate(s)
+		ms.NoError(err)
+		ms.Nil(d)
+	}
+
+	for _, s := range []string{"2026-02-30", "03/11/2026", "2026-11-03T10:00"} {
+		d, err := ParseDueDate(s)
+		ms.True(errors.Is(err, ErrInvalidDueDate), s)
+		ms.Nil(d)
+	}
+}
