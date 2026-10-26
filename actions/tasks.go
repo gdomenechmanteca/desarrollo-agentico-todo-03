@@ -32,11 +32,14 @@ func TasksIndex(c buffalo.Context) error {
 func TasksCreate(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 
-	task := &models.Task{}
-	if err := c.Bind(task); err != nil {
+	input := struct {
+		Title   string `form:"title" json:"title"`
+		DueDate string `form:"due_date" json:"due_date"`
+	}{}
+	if err := c.Bind(&input); err != nil {
 		return err
 	}
-	task.Title = strings.TrimSpace(task.Title)
+	task := &models.Task{Title: strings.TrimSpace(input.Title)}
 
 	position, err := models.NextTaskPosition(tx)
 	if err != nil {
@@ -44,9 +47,16 @@ func TasksCreate(c buffalo.Context) error {
 	}
 	task.Position = position
 
-	verrs, err := tx.ValidateAndCreate(task)
+	verrs := validate.NewErrors()
+	dueDate, err := models.ParseDueDate(input.DueDate)
 	if err != nil {
-		return err
+		verrs.Add("due_date", err.Error())
+	} else {
+		task.DueDate = dueDate
+		verrs, err = tx.ValidateAndCreate(task)
+		if err != nil {
+			return err
+		}
 	}
 
 	if verrs.HasAny() {
@@ -79,7 +89,7 @@ func TasksEdit(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.HTML("tasks/edit.plush.html"))
 }
 
-// TasksUpdate actualiza solo el título, conservando los demás datos de la tarea.
+// TasksUpdate actualiza el título y la fecha límite, conservando los demás datos de la tarea.
 func TasksUpdate(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 
@@ -89,12 +99,23 @@ func TasksUpdate(c buffalo.Context) error {
 	}
 
 	input := struct {
-		Title string `form:"title" json:"title"`
+		Title   string `form:"title" json:"title"`
+		DueDate string `form:"due_date" json:"due_date"`
 	}{}
 	if err := c.Bind(&input); err != nil {
 		return err
 	}
 	task.Title = strings.TrimSpace(input.Title)
+
+	dueDate, err := models.ParseDueDate(input.DueDate)
+	if err != nil {
+		verrs := validate.NewErrors()
+		verrs.Add("due_date", err.Error())
+		c.Set("task", task)
+		c.Set("errors", verrs)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("tasks/edit.plush.html"))
+	}
+	task.DueDate = dueDate
 
 	verrs, err := tx.ValidateAndUpdate(task)
 	if err != nil {

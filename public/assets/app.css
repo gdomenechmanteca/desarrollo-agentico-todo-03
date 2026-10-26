@@ -279,7 +279,8 @@ h1 {
   line-height: 1;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"] {
   width: 100%;
   min-width: 0;
   min-height: 44px;
@@ -293,6 +294,21 @@ input[type="text"] {
 
 .new-task-row input {
   flex: 1;
+}
+
+.new-task-row input[type="date"] {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.task-due {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.edit-task .field-hint + label {
+  margin-top: 1.25rem;
 }
 
 input::placeholder {
@@ -508,6 +524,10 @@ input:focus-visible {
 
   .new-task-row input {
     flex-basis: calc(100% - 44px);
+  }
+
+  .new-task-row input[type="date"] {
+    flex-basis: auto;
   }
 
   .new-task-row .button {

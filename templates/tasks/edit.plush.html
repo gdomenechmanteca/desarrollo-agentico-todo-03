@@ -17,10 +17,14 @@
     autofocus
     <%= if (errors.HasAny()) { %>aria-invalid="true" aria-describedby="title-error"<% } else { %>aria-describedby="title-help"<% } %>
   >
-  <p id="title-help" class="field-hint">Hasta 200 caracteres. Los demás datos de la tarea no cambian.</p>
+  <p id="title-help" class="field-hint">Hasta 200 caracteres.</p>
+  <label for="task-due-date">Fecha límite (opcional)</label>
+  <input id="task-due-date" type="date" name="due_date" value="<%= task.DueDateValue() %>" aria-describedby="due-date-help">
+  <p id="due-date-help" class="field-hint">Déjala vacía para que la tarea no tenga fecha límite.</p>
   <%= if (errors.HasAny()) { %>
     <p id="title-error" class="field-error" role="alert">
       <%= for (msg) in errors.Get("title") { %><%= msg %><% } %>
+      <%= for (msg) in errors.Get("due_date") { %><%= msg %><% } %>
     </p>
   <% } %>
   <div class="edit-task-actions">
