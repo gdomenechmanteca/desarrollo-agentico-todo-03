@@ -19,6 +19,7 @@ Esta skill suele ejecutarse sin supervisión desde `adws/trigger.go` (`claude -p
 1. Separa el encargo de las opciones `--remote` y `--base`.
 2. Si es una URL de issue, léela con `gh issue view <url> --json number,title,body,labels,url` y guarda su número. El título y el cuerpo forman el encargo.
 3. Clasifícalo como **feature** (comportamiento nuevo o cambio visible), **bug** (algo que no funciona como debería) o **chore** (mantenimiento sin cambio funcional). Usa las etiquetas de la issue si lo indican.
+4. Recupera la memoria del agente: si existe `memoria/README.md`, léelo y lee solo los archivos semánticos, procedimentales y episódicos relevantes para el encargo. Pasa los hechos y recetas pertinentes a la planificación y tenlos en cuenta al validar. Son contexto: si contradicen el repositorio, manda el repositorio.
 
 ## 2. Preparar la rama
 
@@ -49,9 +50,23 @@ Si una validación falla por el cambio, corrígelo dentro del alcance del plan y
 
 Revisa `git diff --check` y `git status --short`: solo deben aparecer el plan y los archivos que este prevé.
 
+## 5b. Revisar
+
+Invoca la skill `revision` con la ruta del plan. Como máximo se hacen **tres intentos** de revisión:
+
+1. Si el veredicto es **APROBADO** o **APROBADO CON OBSERVACIONES**, continúa con el paso 6.
+2. Si es **RECHAZADO** y quedan intentos, corrige solo lo que indique la revisión, dentro del alcance del plan. Después repite las validaciones del paso 5 y vuelve a invocar `revision`.
+3. Si el tercer intento también sale **RECHAZADO**, detente: no hagas commit, push ni PR. Informa del bloqueo con los motivos de cada rechazo y la ruta de `reviews/<slug>/informe.md`. Si el encargo venía de una issue, deja esos motivos en un comentario con `gh issue comment`.
+
+Deja constancia del número de intentos usados en el PR.
+
+## 5c. Documentar en memoria
+
+Invoca la skill `docu` con la ruta del plan, también si la revisión agotó sus intentos o hubo un bloqueo, antes de detenerte. En ese caso los archivos de `memoria/` quedan sin commitear y se mencionan en el informe del bloqueo.
+
 ## 6. Commit y push
 
-1. Añade de forma explícita el plan y los archivos cambiados (no uses `git add -A`).
+1. Añade de forma explícita el plan, los archivos cambiados, `reviews/<slug>/` y los archivos de `memoria/` que haya escrito `docu` (no uses `git add -A`).
 2. Haz un único commit con el formato del repositorio: `tipo(ámbito): descripción en español`, con `feat`, `fix` o `chore` según la clasificación. Si hay issue, añade `Refs #N` en el cuerpo.
 3. Publica la rama: `git push -u <remote> awd/<slug>`.
 
@@ -62,6 +77,8 @@ Abre el PR contra la base con `gh pr create --base <base> --head awd/<slug> --ti
 - `## Resumen`: qué cambia y por qué.
 - `## Plan`: ruta del plan en `plans/`.
 - `## Validación`: cada comando ejecutado y su resultado, incluidos los que no se pudieron ejecutar.
+- `## Revisión`: veredicto de `revision`, su tabla de requisitos y la ruta de `reviews/<slug>/informe.md`.
+- `## Memoria`: episodio creado y entradas semánticas, procedimentales y propuestas a skills que ha escrito `docu`.
 - `## Inferencias y riesgos`: decisiones tomadas sin confirmación.
 - `Closes #N` si el encargo venía de una issue.
 
