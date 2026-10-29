@@ -1,0 +1,12 @@
+ok  	todo/actions	0.461s
+--- FAIL: TestTriggerShellWrapper (0.01s)
+    trigger_test.go:134: wrapper must load YAML and launch the configured prompt: err=exit status 2, events="", output=/src/adws/trigger-github.sh: line 2: set: pipefail: invalid option name
+FAIL
+FAIL	todo/adws	0.306s
+?   	todo/cmd/app	[no test files]
+?   	todo/migrations	[no test files]
+ok  	todo/models	0.141s
+?   	todo/public	[no test files]
+?   	todo/templates	[no test files]
+FAIL
+exit 1

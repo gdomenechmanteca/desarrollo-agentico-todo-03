@@ -1,0 +1,28 @@
+$ curl -i http://localhost:3000/assets/app.css?v=7
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: max-age=31536000
+Content-Length: 8753
+Content-Type: text/css; charset=utf-8
+Etag: -5e4dfc14c2e60000
+Date: Thu, 29 Oct 2026 12:00:57 GMT
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  --color-primary: #b73526;
+  --color-primary-hover: #992b1e;
+  --color-button-primary: #1f7a3d;
+  --color-button-primary-hover: #18602f;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+  background: var(--color-button-primary-hover);
+  border-color: var(--color-button-primary-hover);
+
+$ curl -s http://localhost:3000/ | grep app.css
+    <link rel="stylesheet" href="/assets/app.css?v=7">

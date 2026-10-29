@@ -1,0 +1,41 @@
+$ git status --short --branch
+## awd/boton-color-verde...origin/main
+ M .claude/skills/awd/SKILL.md
+ M public/assets/app.css
+ M templates/application.plush.html
+?? .claude/skills/revision/
+?? plans/boton-color-verde.md
+?? reviews/
+
+$ git diff --check -- public templates
+exit 0
+
+$ git diff -- public templates
+diff --git a/public/assets/app.css b/public/assets/app.css
+index 8b4e776..458c485 100644
+--- a/public/assets/app.css
++++ b/public/assets/app.css
+@@ -21,8 +21,8 @@ form {
+   --color-sidebar: #f7f7f5;
+   --color-primary: #b73526;
+   --color-primary-hover: #992b1e;
+-  --color-button-primary: #1f5fbf;
+-  --color-button-primary-hover: #184c99;
++  --color-button-primary: #1f7a3d;
++  --color-button-primary-hover: #18602f;
+   --color-focus: #245ab4;
+   --color-danger: #a52b25;
+   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+diff --git a/templates/application.plush.html b/templates/application.plush.html
+index 90a8b09..bd09b29 100644
+--- a/templates/application.plush.html
++++ b/templates/application.plush.html
+@@ -4,7 +4,7 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Tareas</title>
+-    <link rel="stylesheet" href="/assets/app.css?v=6">
++    <link rel="stylesheet" href="/assets/app.css?v=7">
+   </head>
+   <body>
+     <div class="app-layout">

@@ -1,0 +1,3 @@
+Contraste WCAG 2.x del texto blanco (#ffffff) sobre el fondo del botón (umbral AA texto normal: 4.5)
+reposo #1f7a3d 5.37:1 CUMPLE AA
+hover #18602f 7.63:1 CUMPLE AA

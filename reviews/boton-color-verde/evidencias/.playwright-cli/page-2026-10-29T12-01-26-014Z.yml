@@ -1,0 +1,53 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - link "Ir a la lista de tareas" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e5]: todo.
+    - navigation "Principal" [ref=e6]:
+      - link "Tareas" [ref=e7] [cursor=pointer]:
+        - /url: /
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - heading "Tareas" [level=1] [ref=e13]
+      - paragraph [ref=e14]: 3 tareas en tu lista
+    - region [ref=e15]:
+      - heading "Lista de tareas" [level=2] [ref=e16]
+      - list [ref=e17]:
+        - listitem [ref=e18]:
+          - 'button "Mover tarea: Preparar la reunión del lunes" [ref=e19]'
+          - 'button "Completar tarea: Preparar la reunión del lunes" [ref=e28] [cursor=pointer]':
+            - generic [ref=e32]: Completar
+          - generic [ref=e33]: Preparar la reunión del lunes
+          - generic [ref=e34]:
+            - 'link "Editar tarea: Preparar la reunión del lunes" [ref=e35] [cursor=pointer]':
+              - /url: /tasks/095bfb69-202a-4b25-a23b-4d65c6f0b3c7/edit
+            - 'button "Eliminar tarea: Preparar la reunión del lunes" [ref=e39] [cursor=pointer]'
+        - listitem [ref=e42]:
+          - 'button "Mover tarea: Enviar el informe mensual" [ref=e43]'
+          - 'button "Completar tarea: Enviar el informe mensual" [ref=e52] [cursor=pointer]':
+            - generic [ref=e56]: Completar
+          - generic [ref=e57]: Enviar el informe mensual
+          - generic [ref=e58]:
+            - 'link "Editar tarea: Enviar el informe mensual" [ref=e59] [cursor=pointer]':
+              - /url: /tasks/3fa0d1cd-4b3e-4b1f-b577-91a9903ebb5f/edit
+            - 'button "Eliminar tarea: Enviar el informe mensual" [ref=e63] [cursor=pointer]'
+        - listitem [ref=e66]:
+          - 'button "Mover tarea: Renovar el dominio de la web" [ref=e67]'
+          - 'button "Reabrir tarea: Renovar el dominio de la web" [pressed] [ref=e76] [cursor=pointer]':
+            - generic [ref=e80]: Reabrir
+          - generic [ref=e81]: Renovar el dominio de la web
+          - generic [ref=e82]: Completada
+          - generic [ref=e83]:
+            - 'link "Editar tarea: Renovar el dominio de la web" [ref=e84] [cursor=pointer]':
+              - /url: /tasks/e172e765-085c-47c9-9825-62da6f220027/edit
+            - 'button "Eliminar tarea: Renovar el dominio de la web" [ref=e88] [cursor=pointer]'
+      - paragraph [ref=e91]
+    - form "Añadir tarea" [ref=e92]:
+      - generic [ref=e93]:
+        - generic [aria-hidden] [ref=e94]: +
+        - generic [ref=e95]: Nueva tarea
+        - textbox "Nueva tarea" [ref=e96]:
+          - /placeholder: Añadir una tarea…
+        - generic [ref=e97]: Fecha límite (opcional)
+        - textbox "Fecha límite (opcional)" [ref=e98]
+        - button "Añadir" [ref=e99] [cursor=pointer]

@@ -1,0 +1,54 @@
+{
+  "inicio": {
+    "anadir": {
+      "background": "rgb(31, 122, 61)",
+      "border": "rgb(31, 122, 61)",
+      "color": "rgb(255, 255, 255)",
+      "outline": "none rgb(255, 255, 255)"
+    },
+    "brandDot": {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(183, 53, 38)",
+      "color": "rgb(183, 53, 38)",
+      "outline": "none rgb(183, 53, 38)"
+    },
+    "addMark": {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(183, 53, 38)",
+      "color": "rgb(183, 53, 38)",
+      "outline": "none rgb(183, 53, 38)"
+    },
+    "anadirHover": {
+      "background": "rgb(24, 96, 47)",
+      "border": "rgb(24, 96, 47)",
+      "color": "rgb(255, 255, 255)",
+      "outline": "none rgb(255, 255, 255)"
+    }
+  },
+  "editar": {
+    "guardar": {
+      "background": "rgb(31, 122, 61)",
+      "border": "rgb(31, 122, 61)",
+      "color": "rgb(255, 255, 255)",
+      "outline": "none rgb(255, 255, 255)"
+    },
+    "cancelar": {
+      "background": "rgb(246, 246, 242)",
+      "border": "rgb(218, 218, 212)",
+      "color": "rgb(65, 65, 61)",
+      "outline": "none rgb(65, 65, 61)"
+    },
+    "guardarHover": {
+      "background": "rgb(24, 96, 47)",
+      "border": "rgb(24, 96, 47)",
+      "color": "rgb(255, 255, 255)",
+      "outline": "none rgb(255, 255, 255)"
+    },
+    "guardarFoco": {
+      "background": "rgb(31, 122, 61)",
+      "border": "rgb(31, 122, 61)",
+      "color": "rgb(255, 255, 255)",
+      "outline": "solid rgb(36, 90, 180)"
+    }
+  }
+}

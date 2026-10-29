@@ -1,0 +1,59 @@
+Unable to find image 'golang:1.26-alpine' locally
+1.26-alpine: Pulling from library/golang
+4f4fb700ef54: Pulling fs layer
+4ad7415f7583: Pulling fs layer
+f64d732997a0: Pulling fs layer
+7b229517ed22: Pulling fs layer
+ead54485711a: Pulling fs layer
+Digest: sha256:a2012b4a1d1f9f7e9f44e0d39b805a901e856b1dd80b4e6ee4338db547050308
+Status: Downloaded newer image for golang:1.26-alpine
+[POP] 2026/10/29 11:58:27 info - Successfully applied 4 migrations.
+[POP] 2026/10/29 11:58:27 info - 0.2902 seconds
+[POP] 2026/10/29 11:58:27 warn - Migrator: unable to dump schema: exec: "pg_dump": executable file not found in $PATH
+go: downloading go.yaml.in/yaml/v3 v3.0.5
+go: downloading github.com/gobuffalo/buffalo-pop/v3 v3.0.7
+go: downloading github.com/gobuffalo/buffalo v1.1.4
+go: downloading github.com/gobuffalo/middleware v1.0.0
+go: downloading github.com/unrolled/secure v1.17.0
+go: downloading github.com/gobuffalo/suite/v4 v4.0.4
+go: downloading github.com/gobuffalo/events v1.4.3
+go: downloading github.com/gobuffalo/refresh v1.13.3
+go: downloading github.com/gobuffalo/plush/v5 v5.0.11
+go: downloading github.com/gorilla/handlers v1.5.1
+go: downloading github.com/gorilla/mux v1.8.0
+go: downloading github.com/gorilla/sessions v1.2.1
+go: downloading github.com/gobuffalo/httptest v1.5.2
+go: downloading github.com/stretchr/testify v1.12.1
+go: downloading github.com/monoculum/formam v3.5.5+incompatible
+go: downloading github.com/gobuffalo/meta v0.3.3
+go: downloading github.com/felixge/httpsnoop v1.0.1
+go: downloading github.com/gorilla/securecookie v1.1.1
+go: downloading github.com/BurntSushi/toml v1.2.1
+go: downloading golang.org/x/crypto v0.51.0
+go: downloading github.com/fsnotify/fsnotify v1.6.0
+go: downloading github.com/mitchellh/go-homedir v1.1.0
+go: downloading gopkg.in/yaml.v3 v3.0.1
+ok  	todo/actions	0.365s
+--- FAIL: TestTriggerOnceRunsIssuesInSequence (0.01s)
+    trigger_test.go:118: exit status 127: env: can't execute 'bash': No such file or directory
+        consulta de issues: exit status 127
+--- FAIL: TestTriggerShellWrapper (0.00s)
+    trigger_test.go:134: wrapper must load YAML and launch the configured prompt: err=exec: "bash": executable file not found in $PATH, events="", output=
+--- FAIL: TestTriggerConfigurablePromptIsLiteral (0.01s)
+    trigger_test.go:148: unexpected exit: exit status 127
+--- FAIL: TestTriggerEmptyListDoesNotInvokeClaude (0.01s)
+    trigger_test.go:161: err=exit status 127, events="", output=env: can't execute 'bash': No such file or directory
+        consulta de issues: exit status 127
+--- FAIL: TestTriggerStopsOnClaudeError (0.01s)
+    trigger_test.go:175: must stop before launching second issue: err=exit status 127, events=""
+--- FAIL: TestTriggerPollsWithoutRememberingIssues (0.01s)
+    trigger_test.go:182: unexpected exit: exit status 127
+FAIL
+FAIL	todo/adws	0.138s
+?   	todo/cmd/app	[no test files]
+?   	todo/migrations	[no test files]
+ok  	todo/models	0.151s
+?   	todo/public	[no test files]
+?   	todo/templates	[no test files]
+FAIL
+exit 1
