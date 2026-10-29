@@ -21,7 +21,7 @@ Aplicación TODO en Go/Buffalo (módulo `todo`) con PostgreSQL, desarrollada med
 6. Documenta en memoria con `/docu` (`memoria/`).
 7. Hace commit y push y abre el PR.
 
-Validaciones: `gofmt -l`, `go vet ./...`, `go test -p 1 ./...` (necesita PostgreSQL con `todo_test` y `soda migrate -e test`) y `go build ./...`. Commits con el formato `tipo(ámbito): descripción en español`.
+Validaciones: `gofmt -l $(git ls-files '*.go')`, `go vet ./...`, `go test -p 1 ./...` (necesita PostgreSQL con `todo_test` y `soda migrate -e test`) y `go build ./...`. Commits con el formato `tipo(ámbito): descripción en español`.
 
 ## Memoria del agente
 

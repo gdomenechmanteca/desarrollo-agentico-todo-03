@@ -25,4 +25,4 @@ Memoria a largo plazo de los agentes que trabajan en este repositorio, inspirada
 - [procedimental/levantar-entorno-con-5432-ocupado.md](procedimental/levantar-entorno-con-5432-ocupado.md) — Stack en Docker sin publicar el 5432 de la base de datos
 - [procedimental/ejecutar-tests-en-contenedor.md](procedimental/ejecutar-tests-en-contenedor.md) — `soda migrate` y `go test` en un contenedor dentro de la red de compose
 - [procedimental/verificar-cambio-visual.md](procedimental/verificar-cambio-visual.md) — Estilos calculados y capturas con `playwright-cli` como evidencia
-- [procedimental/propuestas-skills.md](procedimental/propuestas-skills.md) — P1–P5: cambios pendientes a `revision`, `env/start` y `awd`
+- [procedimental/propuestas-skills.md](procedimental/propuestas-skills.md) — P1–P5: cambios a `revision`, `env/start` y `awd` (aplicados 2026-10-29)

@@ -17,7 +17,14 @@ Levanta la aplicación desde la raíz del repositorio. No mates procesos existen
 1. Confirma que `docker compose` está disponible y que el daemon responde.
 2. Comprueba si los puertos `3000` o `5432` ya están ocupados.
    - Si pertenecen a este proyecto y el servicio responde, reutilízalos.
-   - Si pertenecen a otro proceso, informa del conflicto y detente. No lo finalices.
+   - Si el `5432` pertenece a otro proyecto (compruébalo con `docker ps`) y el `3000` está libre, no lo finalices. Usa el modo **Docker completo** con un override temporal **fuera del repositorio**, que no publique el puerto de la base de datos, e informa de ello:
+     ```yaml
+     services:
+       db:
+         ports: !reset []
+     ```
+     Arranca con `docker compose -f compose.yaml -f <override> up --build -d`. La base de datos solo será accesible desde la red de compose: los tests van en contenedor y las consultas, con `docker compose exec db psql -U postgres`.
+   - En cualquier otro conflicto con otro proceso, informa y detente. No lo finalices.
 
 ## Modo host
 

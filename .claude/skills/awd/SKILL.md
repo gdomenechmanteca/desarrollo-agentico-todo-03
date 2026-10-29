@@ -23,7 +23,7 @@ Esta skill suele ejecutarse sin supervisión desde `adws/trigger.go` (`claude -p
 
 ## 2. Preparar la rama
 
-1. Comprueba `git status --short --branch`. Si hay cambios sin commitear ajenos al encargo, detente: no los mezcles ni los descartes.
+1. Comprueba `git status --short --branch`. Si hay cambios sin commitear ajenos al encargo, detente: no los mezcles ni los descartes. Única excepción: si los cambios están solo en `.claude/` o `memoria/` y no se van a añadir al commit, puedes continuar, declarándolos en el PR como excluidos.
 2. Actualiza la base: `git fetch <remote> <base>`.
 3. Crea una rama desde la base con el nombre `awd/<slug-kebab-case>` derivado del título: `git switch -c awd/<slug> <remote>/<base>`. Si ya existe, añade un sufijo numérico.
 
@@ -41,7 +41,7 @@ Invoca la skill `implement` con la ruta del plan. Respeta sus límites: sin redi
 
 Ejecuta las validaciones que indica el plan. Como mínimo, las pertinentes de:
 
-- `gofmt -l .` (no debe listar archivos)
+- `gofmt -l $(git ls-files '*.go')` (no debe listar archivos tocados por el cambio; ver en `revision` cómo tratar fallos preexistentes del entorno)
 - `go vet ./...`
 - `go test -p 1 ./...` (necesita PostgreSQL y las migraciones de test)
 - `go build ./...`

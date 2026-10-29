@@ -43,10 +43,12 @@ Compara el cambio con el código vecino y con las convenciones del repositorio (
 
 Ejecuta y registra la salida de:
 
-- `gofmt -l .` (no debe listar archivos)
+- `gofmt -l $(git ls-files '*.go')`: solo archivos versionados; así no entran los worktrees de `.claude/worktrees/`. No debe listar ningún archivo tocado por el cambio.
 - `go vet ./...`
 - `go build ./...`
 - `git diff --check`
+
+Lee siempre la salida **completa** de cada comando antes de resumirla en el informe, no solo sus últimas líneas.
 
 ## 4. Verificar la funcionalidad
 
@@ -67,6 +69,8 @@ Todo va a `reviews/<slug>/`:
 - `evidencias/`: capturas (`R1-antes.png`, `R1-despues.png`, …), salidas de comandos (`go-test.txt`, `go-vet.txt`, `gofmt.txt`, `R2-curl.txt`, …) y cualquier volcado de base de datos usado.
 
 Cada evidencia se nombra con el requisito que demuestra. Las salidas se guardan completas, sin editar. No guardes secretos, tokens ni datos personales reales.
+
+No ejecutes herramientas desde `reviews/<slug>/evidencias/`. Si lo haces, borra antes de terminar los artefactos que no sean evidencias (por ejemplo, la carpeta `.playwright-cli/` que crea `playwright-cli`). Las evidencias son solo las que cita el informe.
 
 ### Formato de `informe.md`
 
@@ -117,6 +121,13 @@ Cada evidencia se nombra con el requisito que demuestra. Las salidas se guardan 
 - **APROBADO**: todos los requisitos demostrados con evidencia, sin cambios fuera de alcance y con todas las comprobaciones en verde.
 - **APROBADO CON OBSERVACIONES**: requisitos demostrados, pero hay hallazgos menores de estructura o algo no verificable por el entorno (declarado).
 - **RECHAZADO**: algún requisito falla o no está cubierto, hay cambios fuera de alcance, o falla un test, `go vet`, `gofmt` o la compilación.
+
+Un fallo de `gofmt`, `go vet` o tests **no** cuenta para RECHAZADO si se cumplen las dos condiciones:
+
+1. Solo afecta a archivos que el cambio no toca.
+2. Se demuestra preexistente: el mismo fallo sobre la base, o la causa de entorno identificada con evidencia. Por ejemplo, CRLF en un checkout de Windows, comprobado con `git show HEAD:<archivo> | od -c`.
+
+En ese caso se declara como observación de entorno, con veredicto como mucho APROBADO CON OBSERVACIONES, y lo tiene que confirmar el CI.
 
 Esta skill no corrige el código. Si el veredicto es RECHAZADO, enumera exactamente qué hay que cambiar para que quien la invocó lo corrija dentro del alcance del plan y vuelva a ejecutar `/revision`.
 
