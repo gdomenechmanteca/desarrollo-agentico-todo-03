@@ -31,7 +31,7 @@ Sin observaciones. El cambio reutiliza los tokens `--color-button-primary*` intr
 
 | Comando | Resultado | Salida |
 |---------|-----------|--------|
-| `gofmt -l .` | ⚠️ lista `public/embed.go` y `templates/embed.go`: archivos **no tocados**, con CRLF en la copia de trabajo por `core.autocrlf=true` en Windows (el blob commiteado usa LF). Preexistente y ajeno al cambio | `evidencias/gofmt.txt` |
+| `gofmt -l .` | ⚠️ lista los 17 `.go` del proyecto (ninguno tocado por el cambio) y 65 de `.claude/worktrees/` (otros worktrees, que `gofmt` recorre). Causa: CRLF en la copia de trabajo por `core.autocrlf=true` en Windows; los blobs commiteados usan LF. Preexistente y ajeno al cambio. *Corregido tras la revisión: la primera versión de este informe solo citaba `public/embed.go` y `templates/embed.go` porque se leyó únicamente el final de la salida* | `evidencias/gofmt.txt` |
 | `go vet ./...` | ✅ | `evidencias/go-vet.txt` |
 | `go build ./...` | ✅ | `evidencias/go-build.txt` |
 | `git diff --check` | ✅ | `evidencias/alcance-git-diff.txt` |
